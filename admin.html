@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +9,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+
     import {
       getFirestore,
       collection,
@@ -19,6 +19,7 @@
       doc,
     } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
+    // FIREBASE CONFIG
     const firebaseConfig = {
       apiKey: 'AIzaSyBcXm5QQaYCCddVXNgGqTBAszdKEK-0PJQ',
       authDomain: 'multi-service-app-77dd8.firebaseapp.com',
@@ -31,8 +32,46 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // SIMPLE PASSWORD
+    const ADMIN_PASSWORD = "himanshu123";
+
+    // CHECK LOGIN
+    function checkLogin() {
+      const saved = localStorage.getItem("adminLogged");
+
+      if (saved === "true") {
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("adminPanel").classList.remove("hidden");
+        loadAdminWorks();
+      }
+    }
+
+    // LOGIN FUNCTION
+    window.loginAdmin = function () {
+      const password = document.getElementById("password").value;
+
+      if (password === ADMIN_PASSWORD) {
+        localStorage.setItem("adminLogged", "true");
+
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("adminPanel").classList.remove("hidden");
+
+        loadAdminWorks();
+      } else {
+        alert("Wrong Password");
+      }
+    };
+
+    // LOGOUT
+    window.logoutAdmin = function () {
+      localStorage.removeItem("adminLogged");
+      location.reload();
+    };
+
+    // LOAD WORKS
     async function loadAdminWorks() {
       const workContainer = document.getElementById('adminWorks');
+
       workContainer.innerHTML = '';
 
       const querySnapshot = await getDocs(collection(db, 'works'));
@@ -41,10 +80,16 @@
         const work = docItem.data();
 
         workContainer.innerHTML += `
-          <div class="bg-gray-100 p-4 rounded-2xl flex justify-between items-center">
+          <div class="bg-gray-100 p-4 rounded-2xl flex justify-between items-center gap-4">
+
             <div>
-              <h3 class="font-bold">${work.title}</h3>
-              <p class="text-sm text-gray-600">${work.description}</p>
+              <h3 class="font-bold text-lg">
+                ${work.title}
+              </h3>
+
+              <p class="text-sm text-gray-600 mt-1">
+                ${work.description}
+              </p>
             </div>
 
             <button
@@ -53,18 +98,22 @@
             >
               Delete
             </button>
+
           </div>
         `;
       });
     }
 
+    // DELETE WORK
     window.deleteWork = async function (id) {
       await deleteDoc(doc(db, 'works', id));
       loadAdminWorks();
     };
 
+    // PAGE LOAD
     window.addEventListener('DOMContentLoaded', () => {
-      loadAdminWorks();
+
+      checkLogin();
 
       document.getElementById('workForm').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -80,69 +129,146 @@
         });
 
         document.getElementById('workForm').reset();
+
         loadAdminWorks();
+
+        alert("Work Added Successfully");
       });
     });
   </script>
 </head>
 
 <body class="bg-gray-100 min-h-screen">
-  <header class="bg-black text-white p-6 shadow-lg">
-    <div class="max-w-5xl mx-auto flex justify-between items-center">
-      <h1 class="text-4xl font-bold">Admin Dashboard</h1>
 
-      <a
-        href="index.html"
-        class="bg-green-500 hover:bg-green-600 px-5 py-3 rounded-2xl font-semibold"
+  <!-- LOGIN PAGE -->
+  <div
+    id="loginPage"
+    class="min-h-screen flex items-center justify-center p-6"
+  >
+
+    <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md">
+
+      <h1 class="text-4xl font-bold text-center mb-2">
+        Admin Login
+      </h1>
+
+      <p class="text-gray-500 text-center mb-6">
+        Enter admin password
+      </p>
+
+      <input
+        id="password"
+        type="password"
+        placeholder="Enter Password"
+        class="w-full border p-4 rounded-2xl mb-4"
+      />
+
+      <button
+        onclick="loginAdmin()"
+        class="w-full bg-black text-white py-4 rounded-2xl font-semibold hover:bg-gray-800"
       >
-        Back to Website
-      </a>
+        Login
+      </button>
+
     </div>
-  </header>
 
-  <main class="max-w-5xl mx-auto p-6 grid lg:grid-cols-2 gap-6">
-    <section class="bg-white p-6 rounded-3xl shadow-xl">
-      <h2 class="text-3xl font-bold mb-5">Add New Work</h2>
+  </div>
 
-      <form id="workForm" class="space-y-4">
-        <input
-          id="title"
-          type="text"
-          placeholder="Work Title"
-          class="w-full border p-4 rounded-2xl"
-          required
-        />
+  <!-- ADMIN PANEL -->
+  <div id="adminPanel" class="hidden">
 
-        <textarea
-          id="description"
-          rows="5"
-          placeholder="Work Description"
-          class="w-full border p-4 rounded-2xl"
-          required
-        ></textarea>
+    <!-- HEADER -->
+    <header class="bg-black text-white p-6 shadow-lg">
 
-        <input
-          id="whatsapp"
-          type="text"
-          placeholder="WhatsApp Number"
-          class="w-full border p-4 rounded-2xl"
-          required
-        />
+      <div class="max-w-5xl mx-auto flex justify-between items-center">
 
-        <button
-          type="submit"
-          class="w-full bg-black text-white py-4 rounded-2xl font-semibold hover:bg-gray-800"
-        >
-          Add Work
-        </button>
-      </form>
-    </section>
+        <h1 class="text-4xl font-bold">
+          Admin Dashboard
+        </h1>
 
-    <section class="bg-white p-6 rounded-3xl shadow-xl">
-      <h2 class="text-3xl font-bold mb-5">Manage Works</h2>
+        <div class="flex gap-3">
 
-      <div id="adminWorks" class="space-y-4"></div>
-    </section>
-  </main>
+          <a
+            href="index.html"
+            class="bg-green-500 hover:bg-green-600 px-5 py-3 rounded-2xl font-semibold"
+          >
+            Website
+          </a>
+
+          <button
+            onclick="logoutAdmin()"
+            class="bg-red-500 hover:bg-red-600 px-5 py-3 rounded-2xl font-semibold"
+          >
+            Logout
+          </button>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <!-- MAIN -->
+    <main class="max-w-5xl mx-auto p-6 grid lg:grid-cols-2 gap-6">
+
+      <!-- ADD WORK -->
+      <section class="bg-white p-6 rounded-3xl shadow-xl">
+
+        <h2 class="text-3xl font-bold mb-5">
+          Add New Work
+        </h2>
+
+        <form id="workForm" class="space-y-4">
+
+          <input
+            id="title"
+            type="text"
+            placeholder="Work Title"
+            class="w-full border p-4 rounded-2xl"
+            required
+          />
+
+          <textarea
+            id="description"
+            rows="5"
+            placeholder="Work Description"
+            class="w-full border p-4 rounded-2xl"
+            required
+          ></textarea>
+
+          <input
+            id="whatsapp"
+            type="text"
+            placeholder="WhatsApp Number"
+            class="w-full border p-4 rounded-2xl"
+            required
+          />
+
+          <button
+            type="submit"
+            class="w-full bg-black text-white py-4 rounded-2xl font-semibold hover:bg-gray-800"
+          >
+            Add Work
+          </button>
+
+        </form>
+
+      </section>
+
+      <!-- MANAGE -->
+      <section class="bg-white p-6 rounded-3xl shadow-xl">
+
+        <h2 class="text-3xl font-bold mb-5">
+          Manage Works
+        </h2>
+
+        <div id="adminWorks" class="space-y-4"></div>
+
+      </section>
+
+    </main>
+
+  </div>
+
 </body>
 </html>
