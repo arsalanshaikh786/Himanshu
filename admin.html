@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      deleteDoc,
+      doc,
+    } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyBcXm5QQaYCCddVXNgGqTBAszdKEK-0PJQ',
+      authDomain: 'multi-service-app-77dd8.firebaseapp.com',
+      projectId: 'multi-service-app-77dd8',
+      storageBucket: 'multi-service-app-77dd8.firebasestorage.app',
+      messagingSenderId: '123732555482',
+      appId: '1:123732555482:web:ea47c825e0dbb504f597e3',
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadAdminWorks() {
+      const workContainer = document.getElementById('adminWorks');
+      workContainer.innerHTML = '';
+
+      const querySnapshot = await getDocs(collection(db, 'works'));
+
+      querySnapshot.forEach((docItem) => {
+        const work = docItem.data();
+
+        workContainer.innerHTML += `
+          <div class="bg-gray-100 p-4 rounded-2xl flex justify-between items-center">
+            <div>
+              <h3 class="font-bold">${work.title}</h3>
+              <p class="text-sm text-gray-600">${work.description}</p>
+            </div>
+
+            <button
+              onclick="deleteWork('${docItem.id}')"
+              class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl"
+            >
+              Delete
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    window.deleteWork = async function (id) {
+      await deleteDoc(doc(db, 'works', id));
+      loadAdminWorks();
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadAdminWorks();
+
+      document.getElementById('workForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        const whatsapp = document.getElementById('whatsapp').value;
+
+        await addDoc(collection(db, 'works'), {
+          title,
+          description,
+          whatsapp,
+        });
+
+        document.getElementById('workForm').reset();
+        loadAdminWorks();
+      });
+    });
+  </script>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+  <header class="bg-black text-white p-6 shadow-lg">
+    <div class="max-w-5xl mx-auto flex justify-between items-center">
+      <h1 class="text-4xl font-bold">Admin Dashboard</h1>
+
+      <a
+        href="index.html"
+        class="bg-green-500 hover:bg-green-600 px-5 py-3 rounded-2xl font-semibold"
+      >
+        Back to Website
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto p-6 grid lg:grid-cols-2 gap-6">
+    <section class="bg-white p-6 rounded-3xl shadow-xl">
+      <h2 class="text-3xl font-bold mb-5">Add New Work</h2>
+
+      <form id="workForm" class="space-y-4">
+        <input
+          id="title"
+          type="text"
+          placeholder="Work Title"
+          class="w-full border p-4 rounded-2xl"
+          required
+        />
+
+        <textarea
+          id="description"
+          rows="5"
+          placeholder="Work Description"
+          class="w-full border p-4 rounded-2xl"
+          required
+        ></textarea>
+
+        <input
+          id="whatsapp"
+          type="text"
+          placeholder="WhatsApp Number"
+          class="w-full border p-4 rounded-2xl"
+          required
+        />
+
+        <button
+          type="submit"
+          class="w-full bg-black text-white py-4 rounded-2xl font-semibold hover:bg-gray-800"
+        >
+          Add Work
+        </button>
+      </form>
+    </section>
+
+    <section class="bg-white p-6 rounded-3xl shadow-xl">
+      <h2 class="text-3xl font-bold mb-5">Manage Works</h2>
+
+      <div id="adminWorks" class="space-y-4"></div>
+    </section>
+  </main>
+</body>
+</html>

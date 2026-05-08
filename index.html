@@ -1,0 +1,134 @@
+<!-- ========================= index.html ========================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Marketing Portal</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+    } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyBcXm5QQaYCCddVXNgGqTBAszdKEK-0PJQ',
+      authDomain: 'multi-service-app-77dd8.firebaseapp.com',
+      projectId: 'multi-service-app-77dd8',
+      storageBucket: 'multi-service-app-77dd8.firebasestorage.app',
+      messagingSenderId: '123732555482',
+      appId: '1:123732555482:web:ea47c825e0dbb504f597e3',
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadWorks() {
+      const workContainer = document.getElementById('works');
+      workContainer.innerHTML = '';
+
+      const querySnapshot = await getDocs(collection(db, 'works'));
+
+      querySnapshot.forEach((docItem) => {
+        const work = docItem.data();
+
+        workContainer.innerHTML += `
+          <div class="bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition border">
+            <div class="flex flex-col md:flex-row justify-between gap-5">
+              <div>
+                <h2 class="text-2xl font-bold">${work.title}</h2>
+                <p class="text-gray-600 mt-3">${work.description}</p>
+              </div>
+
+              <a
+                href="https://wa.me/${work.whatsapp}?text=Hello I am interested in ${work.title}"
+                target="_blank"
+                class="bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-2xl font-semibold text-center"
+              >
+                Apply on WhatsApp
+              </a>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', loadWorks);
+  </script>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+  <header class="bg-black text-white p-6 shadow-lg">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div>
+        <h1 class="text-4xl font-bold">Digital Marketing Portal</h1>
+        <p class="text-gray-300 mt-2">Explore daily works and marketing services</p>
+      </div>
+
+      <a
+        href="admin.html"
+        class="bg-green-500 hover:bg-green-600 px-5 py-3 rounded-2xl font-semibold"
+      >
+        Admin Login
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-6">
+    <section class="mb-10">
+      <div class="bg-gradient-to-r from-black to-gray-800 rounded-3xl text-white p-10 shadow-2xl">
+        <h2 class="text-5xl font-bold">Grow Your Digital Business</h2>
+        <p class="mt-4 text-gray-300 text-lg max-w-2xl">
+          Daily marketing jobs, promotions, social media campaigns, SEO work and online growth opportunities.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-3xl font-bold">Latest Marketing Works</h2>
+      </div>
+
+      <div id="works" class="grid gap-6"></div>
+    </section>
+
+    <section class="mt-10">
+      <h2 class="text-3xl font-bold mb-6">Explore Services</h2>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white p-6 rounded-3xl shadow-lg">
+          <h3 class="text-xl font-bold">Instagram Ads</h3>
+          <p class="text-gray-600 mt-2">Professional ad campaigns for reach.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl shadow-lg">
+          <h3 class="text-xl font-bold">SEO Optimization</h3>
+          <p class="text-gray-600 mt-2">Boost Google ranking and traffic.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl shadow-lg">
+          <h3 class="text-xl font-bold">YouTube Promotion</h3>
+          <p class="text-gray-600 mt-2">Increase views and subscribers fast.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl shadow-lg">
+          <h3 class="text-xl font-bold">Google Ads</h3>
+          <p class="text-gray-600 mt-2">Generate leads and online customers.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-black text-white text-center py-6 mt-10">
+    <p>© 2026 Digital Marketing Portal</p>
+  </footer>
+</body>
+</html>
+
+
+<!-- ============
